@@ -1,0 +1,59 @@
+## [Visual Studio Kullanıcı Ayarları]
+*.user
+*.userosscache
+*.sln.docuser
+
+## [Derleme Çıktıları (Build Outputs)]
+bin/
+obj/
+[Ee]bug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## [Visual Studio Geçici Dosyaları]
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docuser
+*.opendb
+*.dbmdl
+
+## [NuGet Paketleri]
+# Paketleri commit'lemek yerine 'dotnet restore' ile çekmek en iyisidir.
+packages/
+*.nuget.props
+*.nuget.targets
+
+## [Publish (Yayınlama) Çıktıları]
+publish/
+*.azurepubxml
+
+## [Entity Framework ve Veritabanı]
+# LocalDB veya SQLite kullanıyorsanız veritabanı dosyalarını hariç tutmak isteyebilirsiniz.
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+## [User Secrets & Hassas Bilgiler]
+# API Anahtarları ve Bağlantı Dizelerini (Connection Strings) korumak için:
+appsettings.Development.json
+appsettings.Production.json
+# Not: appsettings.json dosyasını şablon olarak bırakıp, içindeki 
+# özel verileri secrets.json veya environment variables ile yönetmek daha profesyoneldir.
+
+## [Frontend (Eğer Projenizde Varsa)]
+node_modules/
+dist/
+.env.local
+.env.development.local
+
+## [İşletim Sistemi Dosyaları]
+.DS_Store
+thumbs.db
