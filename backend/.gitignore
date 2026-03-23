@@ -54,6 +54,8 @@ dist/
 .env.local
 .env.development.local
 
+backend/firebase-auth.json
+
 ## [İşletim Sistemi Dosyaları]
 .DS_Store
 thumbs.db
