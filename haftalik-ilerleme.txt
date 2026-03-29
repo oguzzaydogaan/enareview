@@ -1,0 +1,15 @@
+PROJE İLERLEME RAPORU
+
+1. HAFTA: Temel Yapılandırma ve Kayıt Süreçleri (https://drive.google.com/file/d/15y1Mg38ja-V9SmYeYcxoJM92TEeALBaq/view?usp=drive_link)
+
+- Arayüz: TailwindCSS kurulumu yapıldı, stil standartları oluşturuldu.
+
+- Auth: FirebaseAuth entegrasyonu tamamlandı. Kayıt olma aşamasına SMS doğrulama (OTP) adımı eklendi.
+
+2. HAFTA: Güvenli Oturum Yönetimi ve Navigasyon (https://drive.google.com/file/d/1QLPfjjchFFl-iVH1hkLPyRqcy9cMI-5W/view?usp=drive_link)
+
+- Oturum: JWT tabanlı giriş (login) ve otomatik token yenileme (token refresh) mekanizmaları kuruldu.
+
+- Veri Güvenliği: Kullanıcı token'larının cihaz üzerinde güvenli bir şekilde saklanması için expo-secure-store kütüphanesi entegre edildi ve yapılandırıldı.
+
+- Navigasyon: Giriş sonrası kullanıcıyı karşılayan "Welcome" sayfası oluşturuldu. router.replace ile oturum sonrası geri dönüşlerin engellendiği güvenli bir akış sağlandı.
