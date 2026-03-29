@@ -61,5 +61,10 @@ namespace backend.Services
             return user;
         }
 
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
     }
 }

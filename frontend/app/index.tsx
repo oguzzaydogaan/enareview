@@ -1,8 +1,57 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import * as SecureStore from 'expo-secure-store';
 
 export default function Index() {
   const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("jwtToken");
+        if (!token) {
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        const backendUrl = Platform.OS === 'android' ? 'http://10.0.2.2:5146' : 'http://localhost:5146';
+        const response = await fetch(`${backendUrl}/api/users/refresh`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          await SecureStore.setItemAsync("jwtToken", data.token);
+          router.replace({ pathname: "/welcome", params: { username: data.username } } as any);
+        } else {
+          console.log("Token refresh failed with status:", response.status);
+          const errText = await response.text();
+          console.log("Backend response:", errText);
+          await SecureStore.deleteItemAsync("jwtToken");
+          setIsCheckingAuth(false);
+        }
+      } catch (error) {
+        console.error("Token refresh fetch error:", error);
+        // Validation failed, network issue etc
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkToken();
+  }, [router]);
+
+  if (isCheckingAuth) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#dc2626" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">

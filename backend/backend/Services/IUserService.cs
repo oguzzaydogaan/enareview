@@ -7,5 +7,6 @@ namespace backend.Services
     {
         Task<User> SignupAsync(SignupDto dto);
         Task<User> LoginAsync(LoginDto dto);
+        Task<User?> GetUserByIdAsync(int id);
     }
 }
