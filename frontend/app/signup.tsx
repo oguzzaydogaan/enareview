@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { auth, firebaseConfig } from "./firebaseConfig";
+import { userService } from "../services/userService";
 
 export default function SignUp() {
   const router = useRouter();
@@ -31,11 +32,6 @@ export default function SignUp() {
   const [verificationId, setVerificationId] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [showOTPModal, setShowOTPModal] = useState(false);
-
-  const BACKEND_URL =
-    Platform.OS === "android"
-      ? "http://10.0.2.2:5146"
-      : "http://localhost:5146";
 
   const handleSignUp = async () => {
     if (!name || !email || !password || !phoneNumber) {
@@ -87,29 +83,24 @@ export default function SignUp() {
       if (!idToken) throw new Error("Failed to get Firebase token.");
 
       // 3. Create verified user in the backend
-      const signupRes = await fetch(`${BACKEND_URL}/api/users/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          Username: name,
-          Email: email,
-          Password: password,
-          PhoneNumber: phoneNumber,
-          FirebaseToken: idToken,
-        }),
+      await userService.signup({
+        Username: name,
+        Email: email,
+        Password: password,
+        PhoneNumber: phoneNumber,
+        FirebaseToken: idToken,
       });
-
-      if (!signupRes.ok) {
-        const errorData = await signupRes.json();
-        throw new Error(errorData.message || "Signup failed in backend.");
-      }
 
       // Success! User is created and phone is verified.
       alert("Account created and verified successfully!");
       setShowOTPModal(false);
       router.push("/login" as any);
     } catch (err: any) {
-      alert(err.message);
+      if (err.response) {
+        alert(err.response.data?.message || err.response.data?.title || "Signup failed in backend.");
+      } else {
+        alert(err.message);
+      }
     } finally {
       setLoading(false);
     }

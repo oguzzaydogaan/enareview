@@ -2,6 +2,7 @@ import { Text, View, TouchableOpacity, ActivityIndicator, Platform } from "react
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import * as SecureStore from 'expo-secure-store';
+import { userService } from '../services/userService';
 
 export default function Index() {
   const router = useRouter();
@@ -16,28 +17,13 @@ export default function Index() {
           return;
         }
 
-        const backendUrl = Platform.OS === 'android' ? 'http://10.0.2.2:5146' : 'http://localhost:5146';
-        const response = await fetch(`${backendUrl}/api/users/refresh`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          await SecureStore.setItemAsync("jwtToken", data.token);
-          router.replace({ pathname: "/welcome", params: { username: data.username } } as any);
-        } else {
-          console.log("Token refresh failed with status:", response.status);
-          const errText = await response.text();
-          console.log("Backend response:", errText);
-          await SecureStore.deleteItemAsync("jwtToken");
-          setIsCheckingAuth(false);
-        }
+        const response = await userService.refresh();
+        const data = response.data;
+        await SecureStore.setItemAsync("jwtToken", data.token);
+        router.replace({ pathname: "/welcome", params: { username: data.username } } as any);
       } catch (error) {
         console.error("Token refresh fetch error:", error);
-        // Validation failed, network issue etc
+        await SecureStore.deleteItemAsync("jwtToken");
         setIsCheckingAuth(false);
       }
     };

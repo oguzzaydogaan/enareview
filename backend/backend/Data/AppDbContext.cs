@@ -10,6 +10,10 @@ namespace backend.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<ProductLike> ProductLikes { get; set; }
+        public DbSet<ProductDislike> ProductDislikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +27,59 @@ namespace backend.Data
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+            });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
+
+                entity.HasOne(r => r.Product)
+                      .WithMany(p => p.Reviews)
+                      .HasForeignKey(r => r.ProductId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(r => r.User)
+                      .WithMany(u => u.Reviews)
+                      .HasForeignKey(r => r.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ProductLike>(entity =>
+            {
+                entity.HasKey(pl => new { pl.ProductId, pl.UserId });
+
+                entity.HasOne(pl => pl.Product)
+                      .WithMany(p => p.Likes)
+                      .HasForeignKey(pl => pl.ProductId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(pl => pl.User)
+                      .WithMany(u => u.ProductLikes)
+                      .HasForeignKey(pl => pl.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ProductDislike>(entity =>
+            {
+                entity.HasKey(pd => new { pd.ProductId, pd.UserId });
+
+                entity.HasOne(pd => pd.Product)
+                      .WithMany(p => p.Dislikes)
+                      .HasForeignKey(pd => pd.ProductId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(pd => pd.User)
+                      .WithMany(u => u.ProductDislikes)
+                      .HasForeignKey(pd => pd.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
+import { userService } from "../services/userService";
 import {
   ActivityIndicator,
   Alert,
@@ -28,30 +29,21 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const BACKEND_URL =
-        Platform.OS === "android"
-          ? "http://10.0.2.2:5146"
-          : "http://localhost:5146";
-      const response = await fetch(`${BACKEND_URL}/api/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usernameOrEmail: email, password: password }),
-      });
+      const response = await userService.login({ usernameOrEmail: email, password });
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
-        await SecureStore.setItemAsync("jwtToken", data.token);
-        router.dismissAll();
-        router.replace({
-          pathname: "/welcome",
-          params: { username: data.username },
-        } as any);
+      await SecureStore.setItemAsync("jwtToken", data.token);
+      router.dismissAll();
+      router.replace({
+        pathname: "/welcome",
+        params: { username: data.username },
+      } as any);
+    } catch (error: any) {
+      if (error.response) {
+        Alert.alert("Login Failed", error.response.data?.message || "Invalid credentials.");
       } else {
-        Alert.alert("Login Failed", data.message || "Invalid credentials.");
+        Alert.alert("Error", "Could not connect to the server.");
       }
-    } catch (error) {
-      Alert.alert("Error", "Could not connect to the server.");
     } finally {
       setLoading(false);
     }
