@@ -13,3 +13,9 @@ PROJE İLERLEME RAPORU
 - Veri Güvenliği: Kullanıcı token'larının cihaz üzerinde güvenli bir şekilde saklanması için expo-secure-store kütüphanesi entegre edildi ve yapılandırıldı.
 
 - Navigasyon: Giriş sonrası kullanıcıyı karşılayan "Welcome" sayfası oluşturuldu. router.replace ile oturum sonrası geri dönüşlerin engellendiği güvenli bir akış sağlandı.
+
+3. HAFTA: Veri Modelleri ve API Servis Yapılandırması (https://drive.google.com/file/d/1fpjDL1zXsxxNocT5M6rDm00VhsAHgmwW/view?usp=drive_link)
+
+- Backend & Veri Mimarisi: Projenin temel işlevselliği için Products, Reviews, Product Like ve Product Dislike entity yapıları oluşturuldu. Bu varlıkların yönetimi için gerekli olan temel API endpoint'leri geliştirildi.
+
+- Frontend Refactoring (Axios Geçişi): İlk aşamada kullanılan fetch yapısı, kod tekrarını önlemek ve daha profesyonel bir hata yönetimi sağlamak amacıyla Axios kütüphanesi ile güncellendi. BaseURL ve Authorization headers gibi global konfigürasyonları içeren bir Axios Instance oluşturuldu. Projenin ölçeklenebilirliğini artırmak adına her entity için ayrı Request Servisleri tanımlandı. Bu modüler yapı sayesinde yeni endpoint'lerin ön yüze entegrasyon süreci standartlaştırıldı.
