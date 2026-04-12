@@ -14,9 +14,11 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10)
         {
             return await _context.Products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new ProductDto
                 {
                     Id = p.Id,

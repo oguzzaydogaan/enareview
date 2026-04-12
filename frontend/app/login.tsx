@@ -35,7 +35,7 @@ export default function Login() {
       await SecureStore.setItemAsync("jwtToken", data.token);
       router.dismissAll();
       router.replace({
-        pathname: "/welcome",
+        pathname: "/products",
         params: { username: data.username },
       } as any);
     } catch (error: any) {

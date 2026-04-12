@@ -22,5 +22,8 @@ export const userService = {
   },
   refresh: async () => {
     return api.get('/api/users/refresh');
+  },
+  getProfile: async () => {
+    return api.get('/api/users/profile');
   }
 };

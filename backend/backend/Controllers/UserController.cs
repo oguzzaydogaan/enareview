@@ -118,5 +118,37 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+                {
+                    return Unauthorized(new { message = "Invalid token claims." });
+                }
+
+                var user = await _userService.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found." });
+                }
+
+                return Ok(new
+                {
+                    userId = user.Id,
+                    username = user.Username,
+                    email = user.Email,
+                    phoneNumber = user.PhoneNumber,
+                    createdAt = user.CreatedAt
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

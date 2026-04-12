@@ -20,7 +20,7 @@ export default function Index() {
         const response = await userService.refresh();
         const data = response.data;
         await SecureStore.setItemAsync("jwtToken", data.token);
-        router.replace({ pathname: "/welcome", params: { username: data.username } } as any);
+        router.replace({ pathname: "/products", params: { username: data.username } } as any);
       } catch (error) {
         console.error("Token refresh fetch error:", error);
         await SecureStore.deleteItemAsync("jwtToken");
