@@ -19,3 +19,11 @@ PROJE İLERLEME RAPORU
 - Backend & Veri Mimarisi: Projenin temel işlevselliği için Products, Reviews, Product Like ve Product Dislike entity yapıları oluşturuldu. Bu varlıkların yönetimi için gerekli olan temel API endpoint'leri geliştirildi.
 
 - Frontend Refactoring (Axios Geçişi): İlk aşamada kullanılan fetch yapısı, kod tekrarını önlemek ve daha profesyonel bir hata yönetimi sağlamak amacıyla Axios kütüphanesi ile güncellendi. BaseURL ve Authorization headers gibi global konfigürasyonları içeren bir Axios Instance oluşturuldu. Projenin ölçeklenebilirliğini artırmak adına her entity için ayrı Request Servisleri tanımlandı. Bu modüler yapı sayesinde yeni endpoint'lerin ön yüze entegrasyon süreci standartlaştırıldı.
+
+4. HAFTA: Dinamik Veri Yönetimi ve Kullanıcı Arayüzü Geliştirme (https://drive.google.com/file/d/1-lTyNi_A4mNg8NXlzjPLM2FunkX_b0Ac/view?usp=sharing)
+
+- Backend (Performans İyileştirmesi): Verimliliği artırmak ve ölçeklenebilirliği sağlamak amacıyla Products Controller üzerindeki ürün listeleme yapısı güncellendi. Tüm ürünlerin tek seferde çekilmesi yerine, sistem kaynaklarını optimize eden Pagination (Sayfalama) yapısına geçiş yapıldı.
+
+- Frontend (Sayfa Tasarımı ve Entegrasyon): Uygulamanın ana bileşenlerini oluşturan Products (Ürün Listeleme), Product Details (Ürün Detay) ve Profile (Kullanıcı Profili) sayfaları geliştirildi. Oluşturulan yeni API endpoint'leri ile bu sayfalar arasındaki veri iletişimi sağlandı.
+
+- Test ve Veri Manipülasyonu: Geliştirme sürecini hızlandırmak adına Postman üzerinde otomasyon kurgulandı. Ürün ekleme endpoint'i için hazırlanan özel script ve değişkenler (Pre-request Script) kullanılarak, "Collection Runner" aracılığıyla 100 adet test verisi otomatik olarak sisteme aktarıldı ve sayfalama yapısının doğruluğu test edildi.
