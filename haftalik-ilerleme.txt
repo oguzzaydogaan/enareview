@@ -28,7 +28,7 @@ PROJE İLERLEME RAPORU
 
 - Test ve Veri Manipülasyonu: Geliştirme sürecini hızlandırmak adına Postman üzerinde otomasyon kurgulandı. Ürün ekleme endpoint'i için hazırlanan özel script ve değişkenler (Pre-request Script) kullanılarak, "Collection Runner" aracılığıyla 100 adet test verisi otomatik olarak sisteme aktarıldı ve sayfalama yapısının doğruluğu test edildi.
 
-5. HAFTA: Ölçeklenebilir Mesaj Kuyruğu Yönetimi (RabbitMQ) (https://drive.google.com/file/d/1ZVTam5zNE6EsldTN90vKgvV_JsCOCU9e/view?usp=sharing)
+5. HAFTA: Ölçeklenebilir Mesaj Kuyruğu Yönetimi (RabbitMQ) (https://drive.google.com/file/d/1ip0vmVKCx_7RkkKcfPGWSm-tnpEJ4DLy/view?usp=sharing)
 
 - Backend (RabbitMQ Entegrasyonu): Yüksek trafik anlarında veritabanı üzerindeki yükü stabilize etmek ve sistemin yanıt hızını artırmak amacıyla RabbitMQ mesaj kuyruğu mimarisi sisteme entegre edildi. Yorum ekleme (Comment Post) işlemleri doğrudan veritabanına yazılmak yerine, asenkron bir yapıyla önce kuyruğa aktarılmaya başlandı.
 
