@@ -8,10 +8,12 @@ namespace backend.Services
     public class ReviewService : IReviewService
     {
         private readonly AppDbContext _context;
+        private readonly IMessageProducer _messageProducer;
 
-        public ReviewService(AppDbContext context)
+        public ReviewService(AppDbContext context, IMessageProducer messageProducer)
         {
             _context = context;
+            _messageProducer = messageProducer;
         }
 
         public async Task<(bool Success, string Message, IEnumerable<ReviewDto>? Reviews)> GetReviewsAsync(int productId)
@@ -46,7 +48,7 @@ namespace backend.Services
             var alreadyReviewed = await _context.Reviews.AnyAsync(r => r.ProductId == productId && r.UserId == userId);
             if (alreadyReviewed) return (false, "You have already reviewed this product", null);
 
-            var review = new Review
+            var reviewMessage = new ReviewMessageParams
             {
                 ProductId = productId,
                 UserId = userId,
@@ -54,23 +56,9 @@ namespace backend.Services
                 Rating = request.Rating
             };
 
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
+            await _messageProducer.PublishMessageAsync(reviewMessage, "review_queue");
 
-            var user = await _context.Users.FindAsync(userId);
-
-            var reviewDto = new ReviewDto
-            {
-                Id = review.Id,
-                ProductId = review.ProductId,
-                UserId = review.UserId,
-                Username = user?.Username ?? "Unknown",
-                Content = review.Content,
-                Rating = review.Rating,
-                CreatedAt = review.CreatedAt
-            };
-
-            return (true, "Review created", reviewDto);
+            return (true, "Review submitted for processing", null);
         }
 
         public async Task<(bool Success, string Message)> DeleteReviewAsync(int productId, int reviewId, int userId)

@@ -79,16 +79,20 @@ export default function ProductDetail() {
 
     try {
       setSubmittingReview(true);
-      // Currently the backend accepts Rating and Comment per view of CreateReviewDto
-      // Note: Assuming DTO accepts Comment and Rating. Passing a default rating of 5 for now
-      // if UI didn't include a star rater to keep it simple.
       const response = await reviewService.createReview(Number(id), {
         rating: 5,
         content: newReviewText,
       });
 
-      setReviews([response.data, ...reviews]);
+      Alert.alert(
+        "Submitted",
+        "Your review is being processed and will appear shortly.",
+      );
+
       setNewReviewText("");
+      setTimeout(() => {
+        fetchProductAndReviews();
+      }, 1000);
     } catch (error: any) {
       Alert.alert(
         "Error",

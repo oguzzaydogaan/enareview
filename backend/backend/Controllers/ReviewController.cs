@@ -49,7 +49,7 @@ namespace backend.Controllers
                     return BadRequest(new { message = result.Message });
                 }
 
-                return Created(string.Empty, result.Review);
+                return Accepted(new { message = result.Message });
             }
             catch (Exception ex)
             {

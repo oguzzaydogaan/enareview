@@ -27,3 +27,15 @@ PROJE İLERLEME RAPORU
 - Frontend (Sayfa Tasarımı ve Entegrasyon): Uygulamanın ana bileşenlerini oluşturan Products (Ürün Listeleme), Product Details (Ürün Detay) ve Profile (Kullanıcı Profili) sayfaları geliştirildi. Oluşturulan yeni API endpoint'leri ile bu sayfalar arasındaki veri iletişimi sağlandı.
 
 - Test ve Veri Manipülasyonu: Geliştirme sürecini hızlandırmak adına Postman üzerinde otomasyon kurgulandı. Ürün ekleme endpoint'i için hazırlanan özel script ve değişkenler (Pre-request Script) kullanılarak, "Collection Runner" aracılığıyla 100 adet test verisi otomatik olarak sisteme aktarıldı ve sayfalama yapısının doğruluğu test edildi.
+
+5. HAFTA: Ölçeklenebilir Mesaj Kuyruğu Yönetimi (RabbitMQ)
+
+- Backend (RabbitMQ Entegrasyonu): Yüksek trafik anlarında veritabanı üzerindeki yükü stabilize etmek ve sistemin yanıt hızını artırmak amacıyla RabbitMQ mesaj kuyruğu mimarisi sisteme entegre edildi. Yorum ekleme (Comment Post) işlemleri doğrudan veritabanına yazılmak yerine, asenkron bir yapıyla önce kuyruğa aktarılmaya başlandı.
+
+- Veri Güvenliği ve Dayanıklılık (Durability): Olası bir sistem kesintisinde veya sunucu kapanması durumunda veri kaybını %0'a indirmek için kuyruklar "Durable", mesajlar ise "Persistent" olarak yapılandırıldı. Bu sayede mesajların disk üzerinde kalıcı olarak saklanması sağlandı.
+
+- Background Service (Consumer) Geliştirme: Kuyruğa alınan yorumları arka planda (background) dinleyen ve sırasıyla veritabanına işleyen bir Consumer servisi yazıldı. Veri bütünlüğünü korumak adına "Manual Acknowledgement (Ack)" mekanizması kuruldu; böylece bir yorum sadece veritabanına başarıyla yazıldığında kuyruktan silinecek şekilde optimize edildi.
+
+- Neden RabbitMQ?:
+    1. Performans: Kullanıcının yorumun veritabanına yazılmasını beklemeden hızlıca yanıt alması sağlandı.
+    2. Hata Toleransı: Veritabanında bir sorun oluşsa bile yorumlar kuyrukta güvenle bekletilip sistem düzeldiğinde işlenmeye devam edilebilir.
