@@ -14,6 +14,7 @@ namespace backend.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ProductLike> ProductLikes { get; set; }
         public DbSet<ProductDislike> ProductDislikes { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,11 +30,24 @@ namespace backend.Data
                 entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             });
 
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.HasIndex(e => e.Name).IsUnique();
+            });
+
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(150);
                 entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.ImagePath).HasMaxLength(500);
+
+                entity.HasOne(e => e.Category)
+                      .WithMany(c => c.Products)
+                      .HasForeignKey(e => e.CategoryId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Review>(entity =>

@@ -8,15 +8,19 @@ namespace backend.Services
     public class ProductService : IProductService
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductService(AppDbContext context)
+        public ProductService(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10)
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null)
         {
             return await _context.Products
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(p => new ProductDto
@@ -26,14 +30,23 @@ namespace backend.Services
                     Description = p.Description,
                     LikeCount = p.LikeCount,
                     DislikeCount = p.DislikeCount,
-                    CreatedAt = p.CreatedAt
+                    CreatedAt = p.CreatedAt,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.Category.Name,
+                    ImageUrl = p.ImagePath != null && baseUrl != null
+                        ? $"{baseUrl}/{p.ImagePath}"
+                        : null,
+                    AverageRating = p.Reviews.Any() ? Math.Round(p.Reviews.Average(r => r.Rating), 1) : 0,
+                    ReviewCount = p.Reviews.Count
                 })
                 .ToListAsync();
         }
 
-        public async Task<ProductDto?> GetProductByIdAsync(int id)
+        public async Task<ProductDto?> GetProductByIdAsync(int id, string? baseUrl = null)
         {
             return await _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.Id == id)
                 .Select(p => new ProductDto
                 {
                     Id = p.Id,
@@ -41,17 +54,53 @@ namespace backend.Services
                     Description = p.Description,
                     LikeCount = p.LikeCount,
                     DislikeCount = p.DislikeCount,
-                    CreatedAt = p.CreatedAt
+                    CreatedAt = p.CreatedAt,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.Category.Name,
+                    ImageUrl = p.ImagePath != null && baseUrl != null
+                        ? $"{baseUrl}/{p.ImagePath}"
+                        : null,
+                    AverageRating = p.Reviews.Any() ? Math.Round(p.Reviews.Average(r => r.Rating), 1) : 0,
+                    ReviewCount = p.Reviews.Count
                 })
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<ProductDto> CreateProductAsync(CreateProductDto request)
+        public async Task<ProductDto> CreateProductAsync(CreateProductDto request, string baseUrl)
         {
+            var category = await _context.Categories.FindAsync(request.CategoryId);
+            if (category == null)
+                throw new ArgumentException("Category not found.");
+
+            string? imagePath = null;
+
+            if (request.Image != null && request.Image.Length > 0)
+            {
+                var uploadsDir = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", "products");
+                Directory.CreateDirectory(uploadsDir);
+
+                var ext = Path.GetExtension(request.Image.FileName).ToLowerInvariant();
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                if (!allowedExtensions.Contains(ext))
+                    throw new ArgumentException("Invalid image format. Allowed: jpg, jpeg, png, gif, webp");
+
+                var fileName = $"{Guid.NewGuid()}{ext}";
+                var filePath = Path.Combine(uploadsDir, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.Image.CopyToAsync(stream);
+                }
+
+                imagePath = $"uploads/products/{fileName}";
+            }
+
             var product = new Product
             {
                 Name = request.Name,
-                Description = request.Description
+                Description = request.Description,
+                CategoryId = request.CategoryId,
+                ImagePath = imagePath
             };
 
             _context.Products.Add(product);
@@ -64,7 +113,12 @@ namespace backend.Services
                 Description = product.Description,
                 LikeCount = product.LikeCount,
                 DislikeCount = product.DislikeCount,
-                CreatedAt = product.CreatedAt
+                CreatedAt = product.CreatedAt,
+                CategoryId = product.CategoryId,
+                CategoryName = category.Name,
+                ImageUrl = imagePath != null ? $"{baseUrl}/{imagePath}" : null,
+                AverageRating = 0,
+                ReviewCount = 0
             };
         }
 

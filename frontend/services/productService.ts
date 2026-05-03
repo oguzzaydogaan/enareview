@@ -7,6 +7,18 @@ export const productService = {
   getProductById: (id: number) => {
     return api.get(`/api/products/${id}`);
   },
+  createProduct: (data: { name: string; description: string; categoryId: number; image?: any }) => {
+    const formData = new FormData();
+    formData.append('Name', data.name);
+    formData.append('Description', data.description);
+    formData.append('CategoryId', data.categoryId.toString());
+    if (data.image) {
+      formData.append('Image', data.image);
+    }
+    return api.post('/api/products', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   toggleLike: (id: number) => {
     return api.post(`/api/products/${id}/like`);
   },

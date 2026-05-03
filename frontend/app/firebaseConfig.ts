@@ -8,7 +8,7 @@ export const firebaseConfig = {
   storageBucket: "enareview-47d8d.firebasestorage.app",
   messagingSenderId: "331462890307",
   appId: "1:331462890307:web:87de0b24e7df3dfc2ed5f6",
-  measurementId: "G-VXMXDLG5L0"
+  measurementId: "G-VXMXDLG5L0",
 };
 
 export const app = initializeApp(firebaseConfig);

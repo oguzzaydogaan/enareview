@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   RefreshControl,
   StatusBar,
   Text,
@@ -68,69 +69,112 @@ export default function Products() {
 
   const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
-      className="bg-white p-5 rounded-2xl mb-4 border border-slate-100 shadow-sm"
+      className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 overflow-hidden"
+      activeOpacity={0.9}
       onPress={() => router.push(`/product/${item.id}` as any)}
     >
-      <Text className="text-xl font-bold text-slate-800 mb-2 truncate">
-        {item.name}
-      </Text>
-      <Text className="text-slate-500 text-sm mb-4" numberOfLines={2}>
-        {item.description}
-      </Text>
+      {/* Product Image Area */}
+      <View className="relative w-full h-40 bg-gray-100">
+        {item.imageUrl ? (
+          <Image
+            source={{ uri: item.imageUrl }}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+        ) : (
+          <View className="w-full h-full bg-green-50/50 items-center justify-center">
+            <Ionicons name="image-outline" size={48} color="#bbf7d0" />
+          </View>
+        )}
+        
+        {/* Category Badge Floating on Image */}
+        {item.categoryName && (
+          <View className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm">
+            <Text className="text-green-600 text-xs font-black tracking-widest uppercase">{item.categoryName}</Text>
+          </View>
+        )}
+      </View>
 
-      <View className="flex-row items-center gap-6">
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="thumbs-up-outline" size={18} color="#16a34a" />
-          <Text className="text-slate-600 font-medium">{item.likeCount}</Text>
-        </View>
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="thumbs-down-outline" size={18} color="#dc2626" />
-          <Text className="text-slate-600 font-medium">
-            {item.dislikeCount}
-          </Text>
+      <View className="p-4">
+        {/* Title */}
+        <Text className="text-lg font-extrabold text-gray-900 mb-1" numberOfLines={1}>
+          {item.name}
+        </Text>
+
+        {/* Description */}
+        <Text className="text-gray-500 text-sm leading-relaxed mb-3" numberOfLines={2}>
+          {item.description}
+        </Text>
+
+        {/* Stats Row */}
+        <View className="flex-row items-center justify-between border-t border-gray-50 pt-3">
+          <View className="flex-row items-center gap-2">
+            <View className="flex-row items-center gap-1 bg-amber-50 px-2 py-1.5 rounded-xl border border-amber-100">
+              <Ionicons name="star" size={14} color="#f59e0b" />
+              <Text className="text-amber-600 font-bold text-xs">{item.averageRating} ({item.reviewCount})</Text>
+            </View>
+            <View className="flex-row items-center gap-1 bg-green-50 px-2 py-1.5 rounded-xl border border-green-100">
+              <Ionicons name="thumbs-up" size={14} color="#22c55e" />
+              <Text className="text-green-700 font-bold text-xs">{item.likeCount}</Text>
+            </View>
+            <View className="flex-row items-center gap-1 bg-red-50 px-2 py-1.5 rounded-xl border border-red-100">
+              <Ionicons name="thumbs-down" size={14} color="#ef4444" />
+              <Text className="text-red-600 font-bold text-xs">{item.dislikeCount}</Text>
+            </View>
+          </View>
+          <View className="w-8 h-8 bg-gray-50 rounded-full items-center justify-center">
+            <Ionicons name="arrow-forward" size={16} color="#9ca3af" />
+          </View>
         </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-gray-50/50">
       <StatusBar barStyle="dark-content" />
 
       {/* List */}
       <FlatList
-        className="flex-1 px-4 pt-4"
+        className="flex-1 px-5 pt-6"
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#dc2626"]}
+            colors={["#22c55e"]}
           />
         }
         ListFooterComponent={
           loading && !refreshing ? (
             <View className="py-6 items-center">
-              <ActivityIndicator size="small" color="#dc2626" />
+              <ActivityIndicator size="small" color="#22c55e" />
             </View>
           ) : !hasMore && products.length > 0 ? (
             <View className="py-8 items-center">
-              <Text className="text-slate-400 font-medium">
-                No more products to show.
+              <Text className="text-gray-400 font-medium text-sm tracking-wide">
+                You've reached the end!
               </Text>
             </View>
           ) : null
         }
         ListEmptyComponent={
           !loading && !refreshing ? (
-            <View className="flex-1 justify-center items-center py-20">
-              <Ionicons name="cube-outline" size={64} color="#cbd5e1" />
-              <Text className="text-slate-500 text-lg mt-4 font-medium">
-                No products found.
+            <View className="flex-1 justify-center items-center py-32">
+              <View className="w-24 h-24 bg-white rounded-full items-center justify-center mb-6 shadow-sm shadow-gray-200">
+                <Ionicons name="cube-outline" size={48} color="#d1d5db" />
+              </View>
+              <Text className="text-gray-800 text-xl font-bold mb-2">
+                No Products Yet
+              </Text>
+              <Text className="text-gray-400 text-center px-10">
+                Check back later or add a new product to get started.
               </Text>
             </View>
           ) : null

@@ -34,38 +34,42 @@ export default function Index() {
   if (isCheckingAuth) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#dc2626" />
+        <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
   }
 
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">
+      {/* Decorative background circles */}
+      <View className="absolute top-[-80px] right-[-60px] w-64 h-64 rounded-full bg-green-50 opacity-60" />
+      <View className="absolute bottom-[-40px] left-[-40px] w-48 h-48 rounded-full bg-green-50 opacity-40" />
+
       <View className="w-full max-w-sm items-center">
-        <View className="w-24 h-24 bg-red-500 rounded-3xl mb-8 items-center justify-center shadow-lg shadow-red-500/50">
-          <Text className="text-white text-4xl font-extrabold">E</Text>
+        <View className="w-28 h-28 bg-green-500 rounded-[28px] mb-10 items-center justify-center shadow-xl shadow-green-500/40">
+          <Text className="text-white text-5xl font-extrabold">E</Text>
         </View>
         
-        <Text className="text-4xl font-extrabold text-slate-900 mb-2 text-center">
+        <Text className="text-4xl font-extrabold text-gray-900 mb-3 text-center">
           Enareview
         </Text>
-        <Text className="text-slate-500 text-base text-center mb-12">
+        <Text className="text-gray-400 text-base text-center mb-14 leading-relaxed px-4">
           Discover and share authentic reviews with the community.
         </Text>
 
         <View className="w-full gap-4">
           <TouchableOpacity 
-            className="w-full bg-red-600 active:bg-red-700 py-4 rounded-2xl items-center shadow-lg shadow-red-500/30"
+            className="w-full bg-green-500 active:bg-green-600 py-4 rounded-2xl items-center shadow-lg shadow-green-500/30"
             onPress={() => router.push("/login" as any)}
           >
             <Text className="text-white font-bold text-lg">Log In</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            className="w-full bg-white active:bg-slate-50 py-4 rounded-2xl items-center border border-slate-300 shadow-sm"
+            className="w-full bg-white active:bg-gray-50 py-4 rounded-2xl items-center border-2 border-green-500"
             onPress={() => router.push("/signup" as any)}
           >
-            <Text className="text-slate-900 font-bold text-lg">Create Account</Text>
+            <Text className="text-green-600 font-bold text-lg">Create Account</Text>
           </TouchableOpacity>
         </View>
       </View>

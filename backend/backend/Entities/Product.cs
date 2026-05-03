@@ -9,6 +9,13 @@ namespace backend.Entities
         public int DislikeCount { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        // Category
+        public int CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
+
+        // Image
+        public string? ImagePath { get; set; }
+
         // Navigation
         public List<Review> Reviews { get; set; } = new();
         public List<ProductLike> Likes { get; set; } = new();

@@ -17,12 +17,17 @@ namespace backend.Controllers
             _productService = productService;
         }
 
+        private string GetBaseUrl()
+        {
+            return $"{Request.Scheme}://{Request.Host}";
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var products = await _productService.GetProductsAsync(page, pageSize);
+                var products = await _productService.GetProductsAsync(page, pageSize, GetBaseUrl());
                 return Ok(products);
             }
             catch (Exception ex)
@@ -36,7 +41,7 @@ namespace backend.Controllers
         {
             try
             {
-                var product = await _productService.GetProductByIdAsync(id);
+                var product = await _productService.GetProductByIdAsync(id, GetBaseUrl());
 
                 if (product == null)
                 {
@@ -53,12 +58,16 @@ namespace backend.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto request)
+        public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto request)
         {
             try
             {
-                var productDto = await _productService.CreateProductAsync(request);
+                var productDto = await _productService.CreateProductAsync(request, GetBaseUrl());
                 return CreatedAtAction(nameof(GetProduct), new { id = productDto.Id }, productDto);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {

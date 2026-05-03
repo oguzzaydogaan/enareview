@@ -123,22 +123,27 @@ export default function SignUp() {
       >
         <View className="flex-1 px-6 pt-6 pb-8 justify-between">
           <View>
-            <Text className="text-4xl font-extrabold text-slate-900 mb-2">
+            {/* Header icon */}
+            <View className="w-14 h-14 bg-green-50 rounded-2xl items-center justify-center mb-6">
+              <Ionicons name="person-add-outline" size={28} color="#22c55e" />
+            </View>
+
+            <Text className="text-4xl font-extrabold text-gray-900 mb-2">
               Create Account
             </Text>
-            <Text className="text-slate-500 text-base mb-10">
+            <Text className="text-gray-400 text-base mb-10">
               Join Enareview to start exploring
             </Text>
 
             <View className="gap-5">
               <View>
-                <Text className="text-slate-700 font-medium mb-2 ml-1">
+                <Text className="text-gray-700 font-semibold mb-2 ml-1">
                   Username
                 </Text>
                 <TextInput
-                  className="w-full bg-slate-50 text-slate-900 px-5 py-4 rounded-2xl border border-slate-200 focus:border-red-500"
+                  className="w-full bg-gray-50 text-gray-900 px-5 py-4 rounded-2xl border border-gray-200 focus:border-green-500"
                   placeholder="Enter your username"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#9ca3af"
                   value={name}
                   onChangeText={setName}
                   editable={!loading}
@@ -146,13 +151,13 @@ export default function SignUp() {
               </View>
 
               <View>
-                <Text className="text-slate-700 font-medium mb-2 ml-1">
+                <Text className="text-gray-700 font-semibold mb-2 ml-1">
                   Email Address
                 </Text>
                 <TextInput
-                  className="w-full bg-slate-50 text-slate-900 px-5 py-4 rounded-2xl border border-slate-200 focus:border-red-500"
+                  className="w-full bg-gray-50 text-gray-900 px-5 py-4 rounded-2xl border border-gray-200 focus:border-green-500"
                   placeholder="Enter your email"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#9ca3af"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   value={email}
@@ -162,13 +167,13 @@ export default function SignUp() {
               </View>
 
               <View>
-                <Text className="text-slate-700 font-medium mb-2 ml-1">
+                <Text className="text-gray-700 font-semibold mb-2 ml-1">
                   Phone Number
                 </Text>
                 <TextInput
-                  className="w-full bg-slate-50 text-slate-900 px-5 py-4 rounded-2xl border border-slate-200 focus:border-red-500"
+                  className="w-full bg-gray-50 text-gray-900 px-5 py-4 rounded-2xl border border-gray-200 focus:border-green-500"
                   placeholder="+1234567890"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#9ca3af"
                   keyboardType="phone-pad"
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
@@ -177,14 +182,14 @@ export default function SignUp() {
               </View>
 
               <View>
-                <Text className="text-slate-700 font-medium mb-2 ml-1">
+                <Text className="text-gray-700 font-semibold mb-2 ml-1">
                   Password
                 </Text>
-                <View className="w-full bg-slate-50 rounded-2xl border border-slate-200 focus:border-red-500 flex-row items-center px-5">
+                <View className="w-full bg-gray-50 rounded-2xl border border-gray-200 focus:border-green-500 flex-row items-center px-5">
                   <TextInput
-                    className="flex-1 text-slate-900 py-4"
+                    className="flex-1 text-gray-900 py-4"
                     placeholder="Create a password"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor="#9ca3af"
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
@@ -197,7 +202,7 @@ export default function SignUp() {
                     <Ionicons
                       name={showPassword ? "eye-off" : "eye"}
                       size={20}
-                      color="#94a3b8"
+                      color="#9ca3af"
                     />
                   </TouchableOpacity>
                 </View>
@@ -209,7 +214,7 @@ export default function SignUp() {
             <TouchableOpacity
               onPress={handleSignUp}
               disabled={loading}
-              className={`w-full py-4 rounded-2xl items-center shadow-lg ${loading ? "bg-red-400 shadow-none" : "bg-red-600 shadow-red-500/30"}`}
+              className={`w-full py-4 rounded-2xl items-center shadow-lg ${loading ? "bg-green-300 shadow-none" : "bg-green-500 shadow-green-500/30"}`}
             >
               {loading ? (
                 <ActivityIndicator color="white" />
@@ -219,12 +224,12 @@ export default function SignUp() {
             </TouchableOpacity>
 
             <View className="flex-row justify-center items-center gap-1">
-              <Text className="text-slate-500">Already have an account?</Text>
+              <Text className="text-gray-400">Already have an account?</Text>
               <TouchableOpacity
                 onPress={() => router.push("/login" as any)}
                 disabled={loading}
               >
-                <Text className="text-red-600 font-bold">Log In</Text>
+                <Text className="text-green-600 font-bold">Log In</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -234,18 +239,23 @@ export default function SignUp() {
       {/* OTP Verification Modal */}
       <Modal visible={showOTPModal} animationType="slide" transparent={true}>
         <View className="flex-1 justify-center items-center bg-black/50 px-6">
-          <View className="w-full bg-white rounded-3xl p-6 items-center">
-            <Text className="text-2xl font-bold text-slate-900 mb-2">
+          <View className="w-full bg-white rounded-3xl p-8 items-center shadow-2xl">
+            {/* Modal icon */}
+            <View className="w-16 h-16 bg-green-50 rounded-full items-center justify-center mb-4">
+              <Ionicons name="shield-checkmark-outline" size={32} color="#22c55e" />
+            </View>
+
+            <Text className="text-2xl font-bold text-gray-900 mb-2">
               Verify Phone
             </Text>
-            <Text className="text-slate-500 text-center mb-6">
+            <Text className="text-gray-400 text-center mb-6">
               Enter the verification code sent to {phoneNumber}
             </Text>
 
             <TextInput
-              className="w-full bg-slate-50 text-slate-900 px-5 py-4 text-center text-xl tracking-widest rounded-2xl border border-slate-200 focus:border-red-500 mb-6"
+              className="w-full bg-gray-50 text-gray-900 px-5 py-4 text-center text-xl tracking-widest rounded-2xl border border-gray-200 focus:border-green-500 mb-6"
               placeholder="000000"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#9ca3af"
               keyboardType="number-pad"
               value={verificationCode}
               onChangeText={setVerificationCode}
@@ -255,7 +265,7 @@ export default function SignUp() {
             <TouchableOpacity
               onPress={handleVerifyOTP}
               disabled={loading}
-              className={`w-full py-4 rounded-2xl items-center mb-4 ${loading ? "bg-red-400" : "bg-red-600"}`}
+              className={`w-full py-4 rounded-2xl items-center mb-4 ${loading ? "bg-green-300" : "bg-green-500"}`}
             >
               {loading ? (
                 <ActivityIndicator color="white" />
@@ -270,7 +280,7 @@ export default function SignUp() {
               onPress={() => setShowOTPModal(false)}
               disabled={loading}
             >
-              <Text className="text-slate-500 font-medium p-2">Cancel</Text>
+              <Text className="text-gray-400 font-medium p-2">Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>

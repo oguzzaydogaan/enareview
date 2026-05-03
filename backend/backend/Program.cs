@@ -54,6 +54,10 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+// Ensure wwwroot/uploads/products directory exists
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", "products");
+Directory.CreateDirectory(uploadsPath);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -61,6 +65,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Serve static files (uploaded images)
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

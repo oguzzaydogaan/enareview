@@ -39,3 +39,14 @@ PROJE İLERLEME RAPORU
 - Neden RabbitMQ?:
     1. Performans: Kullanıcının yorumun veritabanına yazılmasını beklemeden hızlıca yanıt alması sağlandı.
     2. Hata Toleransı: Veritabanında bir sorun oluşsa bile yorumlar kuyrukta güvenle bekletilip sistem düzeldiğinde işlenmeye devam edilebilir.
+
+6. HAFTA: Görsel Kimlik Güncellemesi ve Veri Modeli Genişletme
+
+- Backend:
+    1. Ürün yapısı, daha zengin bir kullanıcı deneyimi sunmak amacıyla genişletildi; başlangıçta eksik olan resim (Image) ve kategori (Category) alanları veri modeline dahil edildi.
+    2. Ürünlerin listelenmesi ve detaylandırılması aşamasında görsel bir standart oluşturmak adına backend üzerindeki endpoint'ler, yeni eklenen bu özelliklerle uyumlu hale getirildi.
+
+- Frontend:
+    1. Uygulamanın görsel kimliği, daha modern ve profesyonel bir görünüm hedeflenerek kırmızı-beyaz temasından yeşil-beyaz temasına geçirilerek güncellendi.
+    2. Kullanıcı arayüzünde yapılan estetik dokunuşlarla uygulamanın göze daha çok hitap etmesi sağlandı ve genel kullanıcı deneyimi iyileştirildi.
+    3. Backend tarafında eklenen kategori ve resim verileri, oluşturulan Products ve Product Details sayfalarına entegre edilerek arayüzdeki eksiklikler giderildi.

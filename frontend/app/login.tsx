@@ -56,22 +56,27 @@ export default function Login() {
     >
       <View className="flex-1 px-6 pt-6 pb-8 justify-between">
         <View>
-          <Text className="text-4xl font-extrabold text-slate-900 mb-2">
+          {/* Header icon */}
+          <View className="w-14 h-14 bg-green-50 rounded-2xl items-center justify-center mb-6">
+            <Ionicons name="log-in-outline" size={28} color="#22c55e" />
+          </View>
+
+          <Text className="text-4xl font-extrabold text-gray-900 mb-2">
             Welcome Back
           </Text>
-          <Text className="text-slate-500 text-base mb-10">
+          <Text className="text-gray-400 text-base mb-10">
             Sign in to continue to Enareview
           </Text>
 
           <View className="gap-5">
             <View>
-              <Text className="text-slate-700 font-medium mb-2 ml-1">
+              <Text className="text-gray-700 font-semibold mb-2 ml-1">
                 Email Address
               </Text>
               <TextInput
-                className="w-full bg-slate-50 text-slate-900 px-5 py-4 rounded-2xl border border-slate-200 focus:border-red-500"
+                className="w-full bg-gray-50 text-gray-900 px-5 py-4 rounded-2xl border border-gray-200 focus:border-green-500"
                 placeholder="Enter your email"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#9ca3af"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -80,14 +85,14 @@ export default function Login() {
             </View>
 
             <View>
-              <Text className="text-slate-700 font-medium mb-2 ml-1">
+              <Text className="text-gray-700 font-semibold mb-2 ml-1">
                 Password
               </Text>
-              <View className="w-full bg-slate-50 rounded-2xl border border-slate-200 focus:border-red-500 flex-row items-center px-5">
+              <View className="w-full bg-gray-50 rounded-2xl border border-gray-200 focus:border-green-500 flex-row items-center px-5">
                 <TextInput
-                  className="flex-1 text-slate-900 py-4"
+                  className="flex-1 text-gray-900 py-4"
                   placeholder="Enter your password"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#9ca3af"
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={setPassword}
@@ -99,14 +104,14 @@ export default function Login() {
                   <Ionicons
                     name={showPassword ? "eye-off" : "eye"}
                     size={20}
-                    color="#94a3b8"
+                    color="#9ca3af"
                   />
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity className="items-end mt-2">
-              <Text className="text-red-600 font-semibold">
+              <Text className="text-green-600 font-semibold">
                 Forgot Password?
               </Text>
             </TouchableOpacity>
@@ -115,7 +120,7 @@ export default function Login() {
 
         <View className="gap-6 pt-6 mb-4">
           <TouchableOpacity
-            className={`w-full ${loading ? "bg-red-400" : "bg-red-600 active:bg-red-700"} py-4 rounded-2xl items-center shadow-lg shadow-red-500/30`}
+            className={`w-full ${loading ? "bg-green-300" : "bg-green-500 active:bg-green-600"} py-4 rounded-2xl items-center shadow-lg shadow-green-500/30`}
             onPress={handleLogin}
             disabled={loading}
           >
@@ -127,9 +132,9 @@ export default function Login() {
           </TouchableOpacity>
 
           <View className="flex-row justify-center items-center gap-1">
-            <Text className="text-slate-500">Don't have an account?</Text>
+            <Text className="text-gray-400">Don't have an account?</Text>
             <TouchableOpacity onPress={() => router.push("/signup" as any)}>
-              <Text className="text-red-600 font-bold">Sign Up</Text>
+              <Text className="text-green-600 font-bold">Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>

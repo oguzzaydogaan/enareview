@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace backend.DTOs
 {
@@ -10,5 +11,10 @@ namespace backend.DTOs
 
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
+
+        [Required]
+        public int CategoryId { get; set; }
+
+        public IFormFile? Image { get; set; }
     }
 }
