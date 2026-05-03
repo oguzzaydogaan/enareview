@@ -6,6 +6,7 @@ export default function RootLayout() {
     <Stack
       screenOptions={{
         headerTitleAlign: "center",
+        headerBackButtonDisplayMode: "minimal",
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />

@@ -1,20 +1,23 @@
-import axios from 'axios';
-import { Platform } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
-const BACKEND_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5146' : 'http://localhost:5146';
+const BACKEND_URL =
+  Platform.OS === "android"
+    ? "http://10.0.2.2:5146"
+    : "http://172.20.10.2:5146";
 
 const api = axios.create({
   baseURL: BACKEND_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 api.interceptors.request.use(
   async (config) => {
     try {
-      const token = await SecureStore.getItemAsync('jwtToken');
+      const token = await SecureStore.getItemAsync("jwtToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -25,7 +28,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

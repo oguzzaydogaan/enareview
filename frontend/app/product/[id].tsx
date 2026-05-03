@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -137,7 +136,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" />
 
       <ScrollView
@@ -257,7 +256,7 @@ export default function ProductDetail() {
                   {/* Rating placeholder */}
                   <View className="flex-row items-center mb-2">
                     <Ionicons name="star" size={14} color="#f59e0b" />
-                    <Text className="text-xs font-bold text-amber-600 ml-1 ml-1">
+                    <Text className="text-xs font-bold text-amber-600 ml-1">
                       {r.rating} / 5
                     </Text>
                   </View>
@@ -270,6 +269,6 @@ export default function ProductDetail() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

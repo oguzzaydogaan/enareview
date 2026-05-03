@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -51,7 +50,7 @@ export default function Profile() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" />
 
       <ScrollView className="flex-1 px-4 py-6">
@@ -105,6 +104,6 @@ export default function Profile() {
           <Text className="text-white font-bold text-lg ml-2">Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

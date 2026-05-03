@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
-  SafeAreaView,
   StatusBar,
   Text,
   TouchableOpacity,
@@ -95,7 +94,7 @@ export default function Products() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" />
 
       {/* List */}
@@ -137,6 +136,6 @@ export default function Products() {
           ) : null
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
