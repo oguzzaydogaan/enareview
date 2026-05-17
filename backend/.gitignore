@@ -43,8 +43,7 @@ publish/
 
 ## [User Secrets & Hassas Bilgiler]
 # API Anahtarları ve Bağlantı Dizelerini (Connection Strings) korumak için:
-appsettings.Development.json
-appsettings.Production.json
+.env
 # Not: appsettings.json dosyasını şablon olarak bırakıp, içindeki 
 # özel verileri secrets.json veya environment variables ile yönetmek daha profesyoneldir.
 

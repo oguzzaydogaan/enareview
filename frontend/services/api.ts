@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 const BACKEND_URL =
   Platform.OS === "android"
     ? "http://10.0.2.2:5146"
-    : "http://172.20.10.2:5146";
+    : "http://192.168.1.123:5146";
 
 const api = axios.create({
   baseURL: BACKEND_URL,

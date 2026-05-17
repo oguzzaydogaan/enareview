@@ -9,11 +9,22 @@ namespace backend.Services
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IRedisService _redisService;
+        private readonly IAiService _aiService;
+        private const int AiSummaryThreshold = 1;
 
-        public ProductService(AppDbContext context, IWebHostEnvironment env)
+        public ProductService(AppDbContext context, IWebHostEnvironment env, IRedisService redisService, IAiService aiService)
         {
             _context = context;
             _env = env;
+            _redisService = redisService;
+            _aiService = aiService;
+        }
+
+        private async Task EnsureRedisCountsInitializedAsync(int productId, int likeCount, int dislikeCount)
+        {
+            await _redisService.SetIfNotExistsAsync($"product:{productId}:likeCount", likeCount);
+            await _redisService.SetIfNotExistsAsync($"product:{productId}:dislikeCount", dislikeCount);
         }
 
         public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null)
@@ -44,26 +55,37 @@ namespace backend.Services
 
         public async Task<ProductDto?> GetProductByIdAsync(int id, string? baseUrl = null)
         {
-            return await _context.Products
+            var product = await _context.Products
                 .Include(p => p.Category)
-                .Where(p => p.Id == id)
-                .Select(p => new ProductDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    LikeCount = p.LikeCount,
-                    DislikeCount = p.DislikeCount,
-                    CreatedAt = p.CreatedAt,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category.Name,
-                    ImageUrl = p.ImagePath != null && baseUrl != null
-                        ? $"{baseUrl}/{p.ImagePath}"
-                        : null,
-                    AverageRating = p.Reviews.Any() ? Math.Round(p.Reviews.Average(r => r.Rating), 1) : 0,
-                    ReviewCount = p.Reviews.Count
-                })
-                .FirstOrDefaultAsync();
+                .Include(p => p.Reviews)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null) return null;
+
+            string? aiSummary = null;
+            if (product.Reviews.Count >= AiSummaryThreshold)
+            {
+                var reviewTexts = product.Reviews.Select(r => r.Content);
+                aiSummary = await _aiService.SummarizeReviewsAsync(reviewTexts);
+            }
+
+            return new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                LikeCount = product.LikeCount,
+                DislikeCount = product.DislikeCount,
+                CreatedAt = product.CreatedAt,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category.Name,
+                ImageUrl = product.ImagePath != null && baseUrl != null
+                    ? $"{baseUrl}/{product.ImagePath}"
+                    : null,
+                AverageRating = product.Reviews.Any() ? Math.Round(product.Reviews.Average(r => r.Rating), 1) : 0,
+                ReviewCount = product.Reviews.Count,
+                AiSummary = aiSummary
+            };
         }
 
         public async Task<ProductDto> CreateProductAsync(CreateProductDto request, string baseUrl)
@@ -127,29 +149,41 @@ namespace backend.Services
             var product = await _context.Products.FindAsync(productId);
             if (product == null) return (false, "Product not found", 0, 0);
 
+            await EnsureRedisCountsInitializedAsync(productId, product.LikeCount, product.DislikeCount);
+
+            var likeKey = $"product:{productId}:likeCount";
+            var dislikeKey = $"product:{productId}:dislikeCount";
+
             var existingLike = await _context.ProductLikes.FirstOrDefaultAsync(pl => pl.ProductId == productId && pl.UserId == userId);
             var existingDislike = await _context.ProductDislikes.FirstOrDefaultAsync(pd => pd.ProductId == productId && pd.UserId == userId);
-            
+
             if (existingDislike != null)
             {
                 _context.ProductDislikes.Remove(existingDislike);
-                product.DislikeCount = Math.Max(0, product.DislikeCount - 1);
+                await _redisService.DecrAsync(dislikeKey);
             }
 
+            string message;
             if (existingLike != null)
             {
                 _context.ProductLikes.Remove(existingLike);
-                product.LikeCount = Math.Max(0, product.LikeCount - 1);
-                await _context.SaveChangesAsync();
-                return (true, "Like removed", product.LikeCount, product.DislikeCount);
+                await _redisService.DecrAsync(likeKey);
+                message = "Like removed";
             }
             else
             {
                 _context.ProductLikes.Add(new ProductLike { ProductId = productId, UserId = userId });
-                product.LikeCount++;
-                await _context.SaveChangesAsync();
-                return (true, "Like added", product.LikeCount, product.DislikeCount);
+                await _redisService.IncrAsync(likeKey);
+                message = "Like added";
             }
+
+            await _context.SaveChangesAsync();
+            await _redisService.MarkProductDirtyAsync(productId);
+
+            var newLikeCount = (int)(await _redisService.GetCountAsync(likeKey) ?? product.LikeCount);
+            var newDislikeCount = (int)(await _redisService.GetCountAsync(dislikeKey) ?? product.DislikeCount);
+
+            return (true, message, newLikeCount, newDislikeCount);
         }
 
         public async Task<(bool Success, string Message, int LikeCount, int DislikeCount)> ToggleDislikeAsync(int productId, int userId)
@@ -157,29 +191,41 @@ namespace backend.Services
             var product = await _context.Products.FindAsync(productId);
             if (product == null) return (false, "Product not found", 0, 0);
 
+            await EnsureRedisCountsInitializedAsync(productId, product.LikeCount, product.DislikeCount);
+
+            var likeKey = $"product:{productId}:likeCount";
+            var dislikeKey = $"product:{productId}:dislikeCount";
+
             var existingDislike = await _context.ProductDislikes.FirstOrDefaultAsync(pd => pd.ProductId == productId && pd.UserId == userId);
             var existingLike = await _context.ProductLikes.FirstOrDefaultAsync(pl => pl.ProductId == productId && pl.UserId == userId);
-            
+
             if (existingLike != null)
             {
                 _context.ProductLikes.Remove(existingLike);
-                product.LikeCount = Math.Max(0, product.LikeCount - 1);
+                await _redisService.DecrAsync(likeKey);
             }
 
+            string message;
             if (existingDislike != null)
             {
                 _context.ProductDislikes.Remove(existingDislike);
-                product.DislikeCount = Math.Max(0, product.DislikeCount - 1);
-                await _context.SaveChangesAsync();
-                return (true, "Dislike removed", product.LikeCount, product.DislikeCount);
+                await _redisService.DecrAsync(dislikeKey);
+                message = "Dislike removed";
             }
             else
             {
                 _context.ProductDislikes.Add(new ProductDislike { ProductId = productId, UserId = userId });
-                product.DislikeCount++;
-                await _context.SaveChangesAsync();
-                return (true, "Dislike added", product.LikeCount, product.DislikeCount);
+                await _redisService.IncrAsync(dislikeKey);
+                message = "Dislike added";
             }
+
+            await _context.SaveChangesAsync();
+            await _redisService.MarkProductDirtyAsync(productId);
+
+            var newLikeCount = (int)(await _redisService.GetCountAsync(likeKey) ?? product.LikeCount);
+            var newDislikeCount = (int)(await _redisService.GetCountAsync(dislikeKey) ?? product.DislikeCount);
+
+            return (true, message, newLikeCount, newDislikeCount);
         }
     }
 }

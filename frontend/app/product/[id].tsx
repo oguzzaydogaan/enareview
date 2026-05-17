@@ -168,10 +168,12 @@ export default function ProductDetail() {
           <View className="flex-row items-center justify-between mb-4">
             {product.categoryName && (
               <View className="bg-green-50 border border-green-200 px-3 py-1 rounded-full">
-                <Text className="text-green-600 text-xs font-bold">{product.categoryName}</Text>
+                <Text className="text-green-600 text-xs font-bold">
+                  {product.categoryName}
+                </Text>
               </View>
             )}
-            
+
             <View className="flex-row items-center bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
               <Ionicons name="star" size={14} color="#f59e0b" />
               <Text className="text-amber-600 font-bold text-xs ml-1">
@@ -211,6 +213,21 @@ export default function ProductDetail() {
           </View>
         </View>
 
+        {/* AI Summary */}
+        {product.aiSummary && (
+          <View className="mx-6 mt-5 p-5 bg-green-50 rounded-3xl border border-green-100">
+            <View className="flex-row items-center mb-2">
+              <Ionicons name="sparkles" size={16} color="#16a34a" />
+              <Text className="ml-2 text-green-700 font-bold text-sm">
+                AI Özeti
+              </Text>
+            </View>
+            <Text className="text-gray-600 leading-relaxed text-sm">
+              {product.aiSummary}
+            </Text>
+          </View>
+        )}
+
         {/* Reviews Section */}
         <View className="px-6 py-8">
           <View className="flex-row items-center mb-6">
@@ -219,7 +236,9 @@ export default function ProductDetail() {
               User Reviews
             </Text>
             <View className="bg-green-50 rounded-full px-3 py-1 ml-3">
-              <Text className="text-green-600 font-bold text-xs">{reviews.length}</Text>
+              <Text className="text-green-600 font-bold text-xs">
+                {reviews.length}
+              </Text>
             </View>
           </View>
 
@@ -232,7 +251,11 @@ export default function ProductDetail() {
               {/* Star Selector */}
               <View className="flex-row">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <TouchableOpacity key={star} onPress={() => setNewReviewRating(star)} className="p-1">
+                  <TouchableOpacity
+                    key={star}
+                    onPress={() => setNewReviewRating(star)}
+                    className="p-1"
+                  >
                     <Ionicons
                       name={star <= newReviewRating ? "star" : "star-outline"}
                       size={20}
@@ -276,7 +299,11 @@ export default function ProductDetail() {
           {reviews.length === 0 ? (
             <View className="py-10 items-center justify-center">
               <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-3">
-                <Ionicons name="chatbubbles-outline" size={28} color="#d1d5db" />
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={28}
+                  color="#d1d5db"
+                />
               </View>
               <Text className="text-gray-300 mt-2 font-medium text-center px-8">
                 No reviews yet. Be the first to share your thoughts!
