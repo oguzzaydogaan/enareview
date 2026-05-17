@@ -13,5 +13,6 @@ namespace backend.DTOs
         public string? ImageUrl { get; set; }
         public double AverageRating { get; set; }
         public int ReviewCount { get; set; }
+        public string? AiSummary { get; set; }
     }
 }
