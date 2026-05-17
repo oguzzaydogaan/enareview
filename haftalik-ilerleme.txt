@@ -40,6 +40,8 @@ PROJE İLERLEME RAPORU
     1. Performans: Kullanıcının yorumun veritabanına yazılmasını beklemeden hızlıca yanıt alması sağlandı.
     2. Hata Toleransı: Veritabanında bir sorun oluşsa bile yorumlar kuyrukta güvenle bekletilip sistem düzeldiğinde işlenmeye devam edilebilir.
 
+- Model Seçimi: Gemma 4 ve Gemini 2.0 Flash gibi alternatifler denendikten sonra Gemini 2.5 Flash Lite modeline karar verildi. Bu model, düşünce sürecini (chain-of-thought) kullanıcıya göstermeden doğrudan temiz metin üretmesi ve ücretsiz kota limitleri açısından avantajlı olması nedeniyle seçildi.
+
 6. HAFTA: Görsel Kimlik Güncellemesi ve Veri Modeli Genişletme (https://drive.google.com/file/d/1pktEIhH017FHZ4t8Hzz3fKewRfcJdd2t/view?usp=sharing)
 
 - Backend:
@@ -50,3 +52,19 @@ PROJE İLERLEME RAPORU
     1. Uygulamanın görsel kimliği, daha modern ve profesyonel bir görünüm hedeflenerek kırmızı-beyaz temasından yeşil-beyaz temasına geçirilerek güncellendi.
     2. Kullanıcı arayüzünde yapılan estetik dokunuşlarla uygulamanın göze daha çok hitap etmesi sağlandı ve genel kullanıcı deneyimi iyileştirildi.
     3. Backend tarafında eklenen kategori ve resim verileri, oluşturulan Products ve Product Details sayfalarına entegre edilerek arayüzdeki eksiklikler giderildi.
+
+7. HAFTA: Redis ile Hız ve Senkronizasyon (https://drive.google.com/file/d/1qZZtim5-7c0uKadar1wCJzPFD6_Nr5Yq/view?usp=drive_link)
+
+- Backend (Redis Entegrasyonu — Upstash): Yüksek frekanslı beğeni işlemlerinin veritabanı üzerindeki yükünü azaltmak amacıyla Upstash Redis entegrasyonu gerçekleştirildi. Beğeni ve beğenmeme işlemlerinde ürün sayaçları (LikeCount, DislikeCount) artık doğrudan PostgreSQL'e yazılmak yerine Redis üzerinde atomik INCR/DECR komutlarıyla güncelleniyor. Kullanıcı-ürün ilişkisi (kimin beğendiği) veri bütünlüğü açısından PostgreSQL'de tutulmaya devam edildi.
+
+- Senkronizasyon Servisi: Redis'teki beğeni sayaçlarını periyodik olarak PostgreSQL ile senkronize etmek için RedisSyncService adında bir BackgroundService geliştirildi. Servis, her 10 saniyede bir "kirli" (dirty) olarak işaretlenen ürünleri Redis'ten okuyarak veritabanını toplu günceller. Bu sayede yoğun trafik senaryolarında N adet UPDATE sorgusu yerine tek bir toplu yazma işlemiyle performans iyileştirmesi sağlandı.
+
+- Güvenlik: API anahtarları ve bağlantı bilgileri (Gemini, Upstash) appsettings.json'dan tamamen kaldırılarak .env dosyasına taşındı. .env dosyası .gitignore'a eklendi; repoda yalnızca yapıyı gösteren .env.example bulunmaktadır.
+
+8. HAFTA: AI Entegrasyonu (https://drive.google.com/file/d/1LQUsWgXOvAsRxcinDJJX5oCriIHFF511/view?usp=drive_link)
+
+- Backend (AI Servis Altyapısı): Google Gemini API kullanılarak yorumları özetleyen bir yapay zeka servisi geliştirildi. IAiService arayüzü ve GeminiService implementasyonu oluşturuldu. Servis, harici kütüphane bağımlılığı olmadan doğrudan HttpClient ile Gemini REST API'sine bağlanmaktadır; bu sayede timeout yönetimi ve hata kontrolü tam olarak servis katmanında tutulmaktadır.
+
+- Akıllı Özetleme: Bir ürünün yorum sayısı belirlenen eşiği (şu an: 1) geçtiğinde, ürün detay sayfası yüklenirken yorumlar otomatik olarak Gemini 2.5 Flash Lite modeline gönderilir ve 2-3 cümlelik bir özet üretilir. Özet, ProductDto'ya eklenen AiSummary alanıyla frontend'e iletilir.
+
+- Frontend: Ürün detay sayfasına "AI Özeti" bileşeni eklendi. Yorum sayısı eşiği aşan ürünlerde beğeni butonlarının altında, yeşil arka planlı bir kart içinde özet görüntülenmektedir.
