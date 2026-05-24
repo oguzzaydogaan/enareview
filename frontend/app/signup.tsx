@@ -20,7 +20,6 @@ import { userService } from "../services/userService";
 export default function SignUp() {
   const router = useRouter();
   const recaptchaVerifier = useRef(null);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,8 +113,8 @@ export default function SignUp() {
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
+        attemptInvisibleVerification={true}
       />
-
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
