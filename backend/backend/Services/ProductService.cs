@@ -10,15 +10,12 @@ namespace backend.Services
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IRedisService _redisService;
-        private readonly IAiService _aiService;
-        private const int AiSummaryThreshold = 1;
 
-        public ProductService(AppDbContext context, IWebHostEnvironment env, IRedisService redisService, IAiService aiService)
+        public ProductService(AppDbContext context, IWebHostEnvironment env, IRedisService redisService)
         {
             _context = context;
             _env = env;
             _redisService = redisService;
-            _aiService = aiService;
         }
 
         private async Task EnsureRedisCountsInitializedAsync(int productId, int likeCount, int dislikeCount)
@@ -77,12 +74,8 @@ namespace backend.Services
 
             if (product == null) return null;
 
-            string? aiSummary = null;
-            if (product.Reviews.Count >= AiSummaryThreshold)
-            {
-                var reviewTexts = product.Reviews.Select(r => r.Content);
-                aiSummary = await _aiService.SummarizeReviewsAsync(reviewTexts);
-            }
+            var summary = await _context.ProductSummaries
+                .FirstOrDefaultAsync(s => s.ProductId == id);
 
             return new ProductDto
             {
@@ -99,7 +92,7 @@ namespace backend.Services
                     : null,
                 AverageRating = product.Reviews.Any() ? Math.Round(product.Reviews.Average(r => r.Rating), 1) : 0,
                 ReviewCount = product.Reviews.Count,
-                AiSummary = aiSummary
+                AiSummary = summary?.Summary
             };
         }
 

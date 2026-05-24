@@ -68,3 +68,11 @@ PROJE İLERLEME RAPORU
 - Akıllı Özetleme: Bir ürünün yorum sayısı belirlenen eşiği (şu an: 1) geçtiğinde, ürün detay sayfası yüklenirken yorumlar otomatik olarak Gemini 2.5 Flash Lite modeline gönderilir ve 2-3 cümlelik bir özet üretilir. Özet, ProductDto'ya eklenen AiSummary alanıyla frontend'e iletilir.
 
 - Frontend: Ürün detay sayfasına "AI Özeti" bileşeni eklendi. Yorum sayısı eşiği aşan ürünlerde beğeni butonlarının altında, yeşil arka planlı bir kart içinde özet görüntülenmektedir.
+
+9. HAFTA: Arama, Filtreleme, Sıralama ve AI Özet Önbellekleme (https://drive.google.com/file/d/1LbfiOdYKyzYwypdeGpMu5rA1s9wS_1AS/view?usp=sharing)
+
+- Backend (AI Özet Önbellekleme): Her ürün için AI tarafından üretilen yorum özetleri artık her istekte yeniden üretilmek yerine veritabanında kalıcı olarak saklanmaktadır. ProductSummary entity'si ve ilgili migration oluşturuldu. Özetleme mantığı ReviewConsumerService içine taşındı: bir ürüne ilk yorum geldiğinde özet otomatik üretilir; sonraki her 5 yeni yorumda bir özet yenilenir. Bu sayede gereksiz Gemini API çağrıları ve token tüketimi önlendi.
+
+- Backend (Ürün Arama ve Filtreleme): Ürün listeleme endpoint'i genişletilerek üç yeni query parametresi desteklenir hale getirildi: search (ürün adında içerik araması), sortBy (newest / mostReviewed / mostLiked sıralama seçenekleri) ve categoryId (kategoriye göre filtreleme). Tüm bu işlemler EF Core LINQ sorgusu üzerinde veritabanı katmanında gerçekleştirilmektedir; sayfalama (pagination) ile tam uyumlu çalışmaktadır.
+
+- Frontend (Arama, Sıralama ve Kategori Filtresi): Ürünler sayfasına arama çubuğu, sıralama chip'leri ve kategori filtresi eklendi. Arama çubuğu 400ms debounce ile çalışarak gereksiz API isteklerini azaltır. Sıralama seçenekleri (En Yeni, En Çok Değerlendirilen, En Çok Beğenilen) ve kategori filtreleri (All + dinamik kategori listesi) yatay kaydırılabilir chip'ler olarak sunulmaktadır. Herhangi bir filtre değiştiğinde liste sıfırlanarak sayfa 1'den yeni sonuçlar getirilir. Filtre değerlerinin ref üzerinde anlık takip edilmesiyle React state güncelleme gecikmesinden kaynaklanan çift tıklama hatası giderildi; arama çubuğunun FlatList dışına alınmasıyla yazarken klavye kapanma sorunu çözüldü.
