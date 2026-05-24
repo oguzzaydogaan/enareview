@@ -15,6 +15,7 @@ namespace backend.Data
         public DbSet<ProductLike> ProductLikes { get; set; }
         public DbSet<ProductDislike> ProductDislikes { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<ProductSummary> ProductSummaries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,6 +79,18 @@ namespace backend.Data
                 entity.HasOne(pl => pl.User)
                       .WithMany(u => u.ProductLikes)
                       .HasForeignKey(pl => pl.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ProductSummary>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.ProductId).IsUnique();
+                entity.Property(e => e.Summary).IsRequired().HasMaxLength(2000);
+
+                entity.HasOne(e => e.Product)
+                      .WithOne()
+                      .HasForeignKey<ProductSummary>(e => e.ProductId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 

@@ -66,6 +66,8 @@ namespace backend.Services
 
                                 context.Reviews.Add(review);
                                 await context.SaveChangesAsync();
+
+                                await TryUpdateSummaryAsync(context, scope, reviewMessage.ProductId);
                             }
                         }
 
@@ -96,6 +98,49 @@ namespace backend.Services
             }
             catch (OperationCanceledException) { }
             catch (Exception ex) { }
+        }
+
+        private async Task TryUpdateSummaryAsync(AppDbContext context, IServiceScope scope, int productId)
+        {
+            try
+            {
+                var totalReviews = context.Reviews.Count(r => r.ProductId == productId);
+                var existingSummary = context.ProductSummaries.FirstOrDefault(s => s.ProductId == productId);
+
+                bool shouldGenerate = existingSummary == null
+                    || (totalReviews - existingSummary.ReviewCountAtGeneration) >= 5;
+
+                if (!shouldGenerate) return;
+
+                var aiService = scope.ServiceProvider.GetRequiredService<IAiService>();
+                var reviewTexts = context.Reviews
+                    .Where(r => r.ProductId == productId)
+                    .Select(r => r.Content)
+                    .ToList();
+
+                var summary = await aiService.SummarizeReviewsAsync(reviewTexts);
+                if (summary == null) return;
+
+                if (existingSummary == null)
+                {
+                    context.ProductSummaries.Add(new Entities.ProductSummary
+                    {
+                        ProductId = productId,
+                        Summary = summary,
+                        ReviewCountAtGeneration = totalReviews,
+                        GeneratedAt = DateTime.UtcNow
+                    });
+                }
+                else
+                {
+                    existingSummary.Summary = summary;
+                    existingSummary.ReviewCountAtGeneration = totalReviews;
+                    existingSummary.GeneratedAt = DateTime.UtcNow;
+                }
+
+                await context.SaveChangesAsync();
+            }
+            catch { }
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)

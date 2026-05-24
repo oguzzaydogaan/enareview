@@ -57,6 +57,22 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary(int productId)
+        {
+            try
+            {
+                var summary = await _reviewService.GetSummaryAsync(productId);
+                if (summary == null) return NotFound(new { message = "Product not found" });
+
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(int productId, int id)

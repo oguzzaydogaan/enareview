@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace backend.Services
 {
@@ -72,6 +73,23 @@ namespace backend.Services
             await _context.SaveChangesAsync();
 
             return (true, "Review deleted");
+        }
+
+        public async Task<SummaryDto?> GetSummaryAsync(int productId)
+        {
+            var productExists = await _context.Products.AnyAsync(p => p.Id == productId);
+            if (!productExists) return null;
+
+            var summary = await _context.ProductSummaries
+                .FirstOrDefaultAsync(s => s.ProductId == productId);
+
+            if (summary == null) return new SummaryDto();
+
+            return new SummaryDto
+            {
+                Summary = summary.Summary,
+                GeneratedAt = summary.GeneratedAt
+            };
         }
     }
 }
