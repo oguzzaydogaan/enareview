@@ -4,7 +4,7 @@ namespace backend.Services
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null);
+        Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null, string? search = null, string? sortBy = null, int? categoryId = null);
         Task<ProductDto?> GetProductByIdAsync(int id, string? baseUrl = null);
         Task<ProductDto> CreateProductAsync(CreateProductDto request, string baseUrl);
         Task<(bool Success, string Message, int LikeCount, int DislikeCount)> ToggleLikeAsync(int productId, int userId);

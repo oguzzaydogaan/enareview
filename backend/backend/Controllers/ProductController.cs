@@ -23,11 +23,16 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetProducts(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] int? categoryId = null)
         {
             try
             {
-                var products = await _productService.GetProductsAsync(page, pageSize, GetBaseUrl());
+                var products = await _productService.GetProductsAsync(page, pageSize, GetBaseUrl(), search, sortBy, categoryId);
                 return Ok(products);
             }
             catch (Exception ex)

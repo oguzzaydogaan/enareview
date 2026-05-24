@@ -1,8 +1,8 @@
 import api from './api';
 
 export const productService = {
-  getProducts: (page: number = 1, pageSize: number = 10) => {
-    return api.get(`/api/products`, { params: { page, pageSize } });
+  getProducts: (page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, categoryId?: number) => {
+    return api.get(`/api/products`, { params: { page, pageSize, search: search || undefined, sortBy: sortBy || undefined, categoryId: categoryId || undefined } });
   },
   getProductById: (id: number) => {
     return api.get(`/api/products/${id}`);

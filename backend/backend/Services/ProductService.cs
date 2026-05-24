@@ -27,11 +27,26 @@ namespace backend.Services
             await _redisService.SetIfNotExistsAsync($"product:{productId}:dislikeCount", dislikeCount);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null)
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync(int page = 1, int pageSize = 10, string? baseUrl = null, string? search = null, string? sortBy = null, int? categoryId = null)
         {
-            return await _context.Products
+            var query = _context.Products
                 .Include(p => p.Category)
-                .OrderByDescending(p => p.CreatedAt)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
+
+            if (categoryId.HasValue)
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+
+            query = sortBy switch
+            {
+                "mostReviewed" => query.OrderByDescending(p => p.Reviews.Count),
+                "mostLiked"    => query.OrderByDescending(p => p.LikeCount),
+                _              => query.OrderByDescending(p => p.CreatedAt)
+            };
+
+            return await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(p => new ProductDto
