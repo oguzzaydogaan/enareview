@@ -76,3 +76,11 @@ PROJE İLERLEME RAPORU
 - Backend (Ürün Arama ve Filtreleme): Ürün listeleme endpoint'i genişletilerek üç yeni query parametresi desteklenir hale getirildi: search (ürün adında içerik araması), sortBy (newest / mostReviewed / mostLiked sıralama seçenekleri) ve categoryId (kategoriye göre filtreleme). Tüm bu işlemler EF Core LINQ sorgusu üzerinde veritabanı katmanında gerçekleştirilmektedir; sayfalama (pagination) ile tam uyumlu çalışmaktadır.
 
 - Frontend (Arama, Sıralama ve Kategori Filtresi): Ürünler sayfasına arama çubuğu, sıralama chip'leri ve kategori filtresi eklendi. Arama çubuğu 400ms debounce ile çalışarak gereksiz API isteklerini azaltır. Sıralama seçenekleri (En Yeni, En Çok Değerlendirilen, En Çok Beğenilen) ve kategori filtreleri (All + dinamik kategori listesi) yatay kaydırılabilir chip'ler olarak sunulmaktadır. Herhangi bir filtre değiştiğinde liste sıfırlanarak sayfa 1'den yeni sonuçlar getirilir. Filtre değerlerinin ref üzerinde anlık takip edilmesiyle React state güncelleme gecikmesinden kaynaklanan çift tıklama hatası giderildi; arama çubuğunun FlatList dışına alınmasıyla yazarken klavye kapanma sorunu çözüldü.
+
+10. HAFTA: Genel Uygulama Tanıtımı ve Test (https://drive.google.com)
+
+- Uçtan Uca (End-to-End) Test Senaryoları: Uygulamanın tüm kritik akışları gerçek cihaz üzerinde manuel olarak test edildi. Test edilen başlıca senaryolar: yeni kullanıcı kaydı (SMS OTP doğrulama), giriş ve JWT token yönetimi, ürün listeleme ve infinite scroll, arama/sıralama/kategori filtreleme, ürün detay ve AI yorum özeti görüntüleme, beğeni/beğenmeme toggle (Redis + 10sn DB senkronizasyonu), yorum ekleme (RabbitMQ async akış) ve yorum silme.
+
+- Performans ve Dayanıklılık Doğrulaması: Redis write buffer ve RedisSyncService'in doğru çalıştığı, yoğun beğeni işlemlerinde veritabanına toplu yazmanın gerçekleştiği doğrulandı. RabbitMQ kuyruğunun durable yapıda çalıştığı, manual acknowledgement mekanizmasıyla veri kaybının önlendiği teyit edildi.
+
+- Genel Uygulama Tanıtımı: 9 haftalık geliştirme sürecinde oluşturulan tüm özellikler bir arada çalışır hâlde son kez gözden geçirildi. Uygulama; kullanıcı yönetimi, ürün yönetimi, asenkron yorum işleme, Redis tabanlı beğeni sistemi ve AI destekli yorum özetleme bileşenlerinin entegre çalıştığı, ölçeklenebilir bir full-stack yapıya ulaşmıştır.
